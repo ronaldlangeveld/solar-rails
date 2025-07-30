@@ -45,7 +45,7 @@ class SolarmanApi
   private
   
   def get_access_token
-    latest_token = Token.latest
+    latest_token = Token.latest_record
     
     if latest_token&.token_valid?
       return latest_token.access
