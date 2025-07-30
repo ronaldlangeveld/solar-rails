@@ -18,7 +18,7 @@ class PowerMonitorJob < ApplicationJob
     return unless grid_frequency
     
     current_status = grid_frequency['value'].to_f
-    latest_record = GridStatus.latest
+    latest_record = GridStatus.latest_record
     
     # Check if status has changed
     grid_changed = status_changed?(current_status, latest_record)

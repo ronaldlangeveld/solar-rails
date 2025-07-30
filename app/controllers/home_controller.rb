@@ -1,6 +1,6 @@
 class HomeController < ApplicationController
   def index
-    @latest_status = GridStatus.latest
+    @latest_status = GridStatus.latest_record
     @outages = calculate_outages
     @last_updated = @latest_status&.updated_at
   end
