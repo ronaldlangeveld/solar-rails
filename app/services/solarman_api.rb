@@ -71,7 +71,7 @@ class SolarmanApi
     
     if response.success?
       data = response.parsed_response
-      expires_in = (data['expires_in'] * 1000) + (Time.current.to_i * 1000)
+      expires_in = (data['expires_in'].to_i * 1000) + (Time.current.to_i * 1000)
       
       Token.create!(
         access: data['access_token'],
