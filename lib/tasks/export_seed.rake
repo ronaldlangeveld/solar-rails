@@ -14,11 +14,8 @@ namespace :data do
       file.puts "puts '🌱 Seeding data from migration...'"
       file.puts ""
       
-      # Export GridStatus records
+      # Export GridStatus records only
       export_grid_statuses(file)
-      
-      # Export Token records (only non-expired ones)
-      export_tokens(file)
       
       file.puts ""
       file.puts "puts '✅ Seeding completed!'"
@@ -39,8 +36,14 @@ namespace :data do
     
     total_records = GridStatus.count
     batch_size = 1000
+    processed_count = 0
+    
+    puts "📋 Exporting #{total_records} grid status records..."
     
     GridStatus.find_in_batches(batch_size: batch_size) do |batch|
+      processed_count += batch.size
+      percentage = (processed_count.to_f / total_records * 100).round(1)
+      puts "\r📊 Export Progress: #{processed_count}/#{total_records} (#{percentage}%)"
       file.puts "GridStatus.insert_all(["
       
       batch.each_with_index do |record, index|
@@ -64,36 +67,4 @@ namespace :data do
     file.puts ""
   end
   
-  def export_tokens(file)
-    file.puts "# Token Records (non-expired only)"
-    file.puts "puts '🔑 Creating token records...'"
-    file.puts ""
-    
-    # Only export non-expired tokens
-    current_time_ms = Time.current.to_i * 1000
-    valid_tokens = Token.where('expires > ?', current_time_ms)
-    
-    if valid_tokens.any?
-      file.puts "Token.insert_all(["
-      
-      valid_tokens.each_with_index do |token, index|
-        comma = index == valid_tokens.size - 1 ? '' : ','
-        
-        file.puts "  {"
-        file.puts "    access: '#{token.access}',"
-        file.puts "    refresh: '#{token.refresh}',"
-        file.puts "    expires: #{token.expires},"
-        file.puts "    created_at: Time.parse('#{token.created_at.iso8601}'),"
-        file.puts "    updated_at: Time.parse('#{token.updated_at.iso8601}')"
-        file.puts "  }#{comma}"
-      end
-      
-      file.puts "], unique_by: :access)"
-      file.puts "puts '  ✅ #{valid_tokens.count} valid tokens processed'"
-    else
-      file.puts "puts '  ℹ️  No valid tokens to migrate'"
-    end
-    
-    file.puts ""
-  end
 end

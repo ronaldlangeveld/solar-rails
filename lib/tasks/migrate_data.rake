@@ -18,8 +18,6 @@ namespace :data do
       old_db.results_as_hash = true
       
       migrate_grid_statuses(old_db)
-      # Skip token migration as requested
-      puts "\n🔑 Skipping token migration (not needed)"
       
       old_db.close
       puts "✅ Data migration completed successfully!"
@@ -37,11 +35,13 @@ namespace :data do
     
     # Get all records from old database
     old_records = old_db.execute("SELECT * FROM grid_status ORDER BY id")
+    total_records = old_records.length
+    puts "📋 Found #{total_records} records to process"
     
     migrated_count = 0
     skipped_count = 0
     
-    old_records.each do |record|
+    old_records.each_with_index do |record, index|
       # Convert timestamp from JavaScript epoch to Ruby Time
       timestamp = if record['timestamp'].is_a?(String)
                     Time.parse(record['timestamp'])
@@ -73,8 +73,12 @@ namespace :data do
       
       migrated_count += 1
       
-      # Progress indicator
-      print "." if migrated_count % 100 == 0
+      # Progress indicator with percentage
+      processed = index + 1
+      if processed % 50 == 0 || processed == total_records
+        percentage = (processed.to_f / total_records * 100).round(1)
+        puts "\r📊 Progress: #{processed}/#{total_records} (#{percentage}%) - Migrated: #{migrated_count}, Skipped: #{skipped_count}"
+      end
     end
     
     puts "\n✅ Grid status migration complete:"
@@ -82,43 +86,4 @@ namespace :data do
     puts "   ⏭️  Skipped: #{skipped_count} duplicates"
   end
   
-  def migrate_tokens(old_db)
-    puts "\n🔑 Migrating token data..."
-    
-    # Get all tokens from old database
-    old_tokens = old_db.execute("SELECT * FROM tokens ORDER BY id")
-    
-    migrated_count = 0
-    skipped_count = 0
-    
-    old_tokens.each do |record|
-      # Check if token already exists (avoid duplicates)
-      existing = Token.find_by(access: record['access'])
-      
-      if existing
-        skipped_count += 1
-        next
-      end
-      
-      # Convert expires timestamp
-      expires_time = if record['expires'].is_a?(String)
-                       Time.parse(record['expires'])
-                     else
-                       # JavaScript timestamp to Unix timestamp for Rails
-                       record['expires']
-                     end
-      
-      Token.create!(
-        access: record['access'],
-        refresh: record['refresh'],
-        expires: expires_time
-      )
-      
-      migrated_count += 1
-    end
-    
-    puts "✅ Token migration complete:"
-    puts "   📥 Migrated: #{migrated_count} tokens"
-    puts "   ⏭️  Skipped: #{skipped_count} duplicates"
-  end
 end
