@@ -26,7 +26,7 @@ registry:
   # Specify the registry server, if you're not using Docker Hub
   # server: registry.digitalocean.com / ghcr.io / ...
   server: registry.ronald.ink
-  username: ronaldlangeveld
+  username: jinald
   password:
     - KAMAL_REGISTRY_PASSWORD
 
@@ -69,19 +69,6 @@ aliases:
   dbc: app exec --interactive --reuse "bin/rails dbconsole"
   # Replace "SERVICE" with the service name configured for this app
   # Set "--host" to the domain name you want to use for the registry
-  add-registry-to-proxy:
-    server exec docker exec kamal-proxy kamal-proxy deploy registry
-    --target "solar_rails-registry:5000"
-    --host "registry.ronald.ink"
-    --tls
-    --deploy-timeout "30s"
-    --drain-timeout "30s"
-    --health-check-path "/"
-    --buffer-requests 
-    --buffer-responses 
-    --log-request-header "Cache-Control" 
-    --log-request-header "Last-Modified" 
-    --log-request-header "User-Agent"
 
 
 # Use a persistent storage volume for sqlite database files and local Active Storage files.
@@ -100,20 +87,20 @@ builder:
   arch: amd64
 
 
-accessories:
-  registry:
-    image: registry:latest
-    host: 157.180.27.107 # replace with server ip address
-    port: "127.0.0.1:5000:5000" # exposes port 5000 only to the kamal network
-    env:
-      clear:
-        REGISTRY_AUTH: htpasswd
-        REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
-        REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
-    files:
-      - config/registry.htpasswd:/auth/htpasswd # mount the password file
-    directories:
-      - data:/var/lib/registry # data directory for the registry
+# accessories:
+#   registry:
+#     image: registry:latest
+#     host: 157.180.27.107 # replace with server ip address
+#     port: "127.0.0.1:5000:5000" # exposes port 5000 only to the kamal network
+#     env:
+#       clear:
+#         REGISTRY_AUTH: htpasswd
+#         REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+#         REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+#     files:
+#       - config/registry.htpasswd:/auth/htpasswd # mount the password file
+#     directories:
+#       - data:/var/lib/registry # data directory for the registry
 
   # # Build image via remote server (useful for faster amd64 builds on arm64 computers)
   # remote: ssh://docker@docker-builder-server
