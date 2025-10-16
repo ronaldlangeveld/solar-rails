@@ -7,10 +7,10 @@ image: ronaldlangeveld/solar_rails
 # Deploy to these servers.
 servers:
   web:
-    - 157.180.27.107
+    - 37.27.1.181
   job:
     hosts:
-      - 157.180.27.107
+      - 37.27.1.181
     cmd: bundle exec rails telegram:listen
 
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
