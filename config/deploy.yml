@@ -23,12 +23,8 @@ proxy:
 
 # Credentials for your image host.
 registry:
-  # Specify the registry server, if you're not using Docker Hub
-  # server: registry.digitalocean.com / ghcr.io / ...
-  server: registry.ronald.ink
-  username: jinald
-  password:
-    - KAMAL_REGISTRY_PASSWORD
+  # Alternatives: hub.docker.com / registry.digitalocean.com / ghcr.io / ...
+  server: localhost:5555
 
 # Inject ENV variables into containers (secrets come from .kamal/secrets).
 env:
