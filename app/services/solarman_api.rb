@@ -13,7 +13,11 @@ class SolarmanApi
   end
 
   def get_grid_status
+    Rails.logger.info "[SolarmanApi] get_grid_status called"
+    Rails.logger.info "[SolarmanApi] base_url=#{base_url.present? ? 'set' : 'MISSING'}, app_id=#{app_id.present? ? 'set' : 'MISSING'}, device_serial=#{device_serial.present? ? 'set' : 'MISSING'}"
+
     access_token = get_access_token
+    Rails.logger.info "[SolarmanApi] access_token=#{access_token.present? ? 'obtained' : 'FAILED'}"
     return nil unless access_token
 
     response = fetch_grid_data(access_token)
