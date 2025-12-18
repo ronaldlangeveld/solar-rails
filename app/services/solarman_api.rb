@@ -20,18 +20,30 @@ class SolarmanApi
 
     # If we get a 401 (unauthorized), the token might be invalid even though we thought it was valid
     # Try to force a new token and retry once
-    if response.code == 401
+    if response&.code == 401
       Rails.logger.warn "Received 401 from Solarman API, forcing token refresh"
       invalidate_current_token
       access_token = get_access_token
       return nil unless access_token
       response = fetch_grid_data(access_token)
+    elsif response && !response.success?
+      # Handle other non-success statuses by forcing a fresh token once
+      Rails.logger.warn "Solarman API non-success #{response.code} - #{response.message}, retrying with new token"
+      invalidate_current_token
+      access_token = fetch_new_token
+      return nil unless access_token
+      response = fetch_grid_data(access_token)
     end
 
-    if response.success?
-      response["dataList"]
+    if response&.success?
+      data = response["dataList"]
+      if data.nil?
+        Rails.logger.error "Solarman API response missing dataList: #{response.parsed_response}"
+        return nil
+      end
+      data
     else
-      Rails.logger.error "Solarman API error: #{response.code} - #{response.message}"
+      Rails.logger.error "Solarman API error: #{response&.code} - #{response&.message}; body: #{response&.parsed_response}"
       nil
     end
   rescue => e
@@ -56,6 +68,9 @@ class SolarmanApi
       body: body.to_json,
       query: { appId: app_id, language: "en" }
     })
+  rescue => e
+    Rails.logger.error "Solarman API fetch_grid_data exception: #{e.message}"
+    nil
   end
 
   def invalidate_current_token
