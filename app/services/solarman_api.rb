@@ -87,18 +87,22 @@ class SolarmanApi
 
   def get_access_token
     latest_token = Token.latest_record
+    Rails.logger.info "[SolarmanApi] get_access_token: latest_token exists=#{latest_token.present?}, valid=#{latest_token&.token_valid?}"
 
     if latest_token&.token_valid?
+      Rails.logger.info "[SolarmanApi] Using existing valid token"
       return latest_token.access
     end
 
     # Try to refresh the token if we have a refresh token
     if latest_token&.refresh.present?
+      Rails.logger.info "[SolarmanApi] Attempting token refresh"
       refreshed_token = refresh_access_token(latest_token.refresh)
       return refreshed_token if refreshed_token
     end
 
     # Fall back to fetching a completely new token
+    Rails.logger.info "[SolarmanApi] Fetching brand new token"
     fetch_new_token
   end
 
@@ -115,6 +119,8 @@ class SolarmanApi
       body: body.to_json,
       query: { appId: app_id, language: "en" }
     })
+
+    Rails.logger.info "[SolarmanApi] refresh_access_token response: #{response.code} - #{response.parsed_response}"
 
     if response.success?
       data = response.parsed_response
@@ -146,11 +152,15 @@ class SolarmanApi
       password: password
     }
 
+    Rails.logger.info "[SolarmanApi] fetch_new_token: email=#{email.present? ? 'set' : 'MISSING'}, password=#{password.present? ? 'set' : 'MISSING'}, app_secret=#{app_secret.present? ? 'set' : 'MISSING'}"
+
     response = HTTParty.post(url, {
       headers: headers,
       body: body.to_json,
       query: { appId: app_id, language: "en" }
     })
+
+    Rails.logger.info "[SolarmanApi] fetch_new_token response: #{response.code} - #{response.parsed_response}"
 
     if response.success?
       data = response.parsed_response
@@ -164,11 +174,11 @@ class SolarmanApi
 
       data["access_token"]
     else
-      Rails.logger.error "Token fetch error: #{response.code} - #{response.message}"
+      Rails.logger.error "[SolarmanApi] Token fetch error: #{response.code} - #{response.message} - #{response.parsed_response}"
       nil
     end
   rescue => e
-    Rails.logger.error "Token fetch exception: #{e.message}"
+    Rails.logger.error "[SolarmanApi] Token fetch exception: #{e.message}"
     nil
   end
 end
