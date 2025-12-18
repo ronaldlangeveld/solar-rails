@@ -146,6 +146,7 @@ class SolarmanApi
   def fetch_new_token
     url = "https://#{base_url}/account/v1.0/token"
     headers = { "Content-Type" => "application/json" }
+
     body = {
       appSecret: app_secret,
       email: email,
@@ -162,8 +163,10 @@ class SolarmanApi
 
     Rails.logger.info "[SolarmanApi] fetch_new_token response: #{response.code} - #{response.parsed_response}"
 
-    if response.success?
-      data = response.parsed_response
+    data = response.parsed_response
+
+    # Solarman returns HTTP 200 even on auth failure, so check the body's success field
+    if response.success? && data["success"] != false && data["access_token"].present?
       expires_in = (data["expires_in"].to_i * 1000) + (Time.current.to_i * 1000)
 
       Token.create!(
@@ -174,7 +177,7 @@ class SolarmanApi
 
       data["access_token"]
     else
-      Rails.logger.error "[SolarmanApi] Token fetch error: #{response.code} - #{response.message} - #{response.parsed_response}"
+      Rails.logger.error "[SolarmanApi] Token fetch error: #{response.code} - #{data['msg'] || response.message} - #{data}"
       nil
     end
   rescue => e
