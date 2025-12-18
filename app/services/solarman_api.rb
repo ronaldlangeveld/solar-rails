@@ -42,6 +42,9 @@ class SolarmanApi
         return nil
       end
       data
+    elsif response.nil?
+      Rails.logger.error "Solarman API error: response was nil"
+      nil
     else
       Rails.logger.error "Solarman API error: #{response&.code} - #{response&.message}; body: #{response&.parsed_response}"
       nil
