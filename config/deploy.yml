@@ -7,10 +7,10 @@ image: ronaldlangeveld/solar_rails
 # Deploy to these servers.
 servers:
   web:
-    - 37.27.1.181
+    - 46.62.170.168
   job:
     hosts:
-      - 37.27.1.181
+      - 46.62.170.168
     cmd: bundle exec rails telegram:listen
 
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
@@ -18,7 +18,7 @@ servers:
 #
 # Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 proxy:
-  ssl: true
+  ssl: false
   host: solar.langeveld.blog
 
 # Credentials for your image host.

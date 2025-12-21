@@ -1,9 +1,9 @@
-<div class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-bold mb-8">Solar System Dashboard</h1>
+<div class="dashboard-container">
+  <h1 class="dashboard-title">Solar System Dashboard</h1>
   
   <!-- Last Updated Section -->
-  <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-    <h2 class="text-xl font-semibold mb-2">Last Updated</h2>
+  <div class="last-updated">
+    <h2 class="last-updated-header section-header">Last Updated</h2>
     <% if @last_updated %>
       <p class="text-gray-700">
         System data was last updated on <%= @last_updated.strftime("%B %d, %Y at %I:%M %p") %>
@@ -15,53 +15,53 @@
 
   <!-- Current Status -->
   <% if @latest_status %>
-    <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
-      <h2 class="text-xl font-semibold mb-4">Current Status</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-<%= @latest_status.power_on? ? 'green' : 'red' %>-50 p-4 rounded-lg">
-          <h3 class="font-medium text-<%= @latest_status.power_on? ? 'green' : 'red' %>-800">Power Status</h3>
-          <p class="text-2xl font-bold text-<%= @latest_status.power_on? ? 'green' : 'red' %>-600">
+    <div class="section-card">
+      <h2 class="section-header">Current Status</h2>
+      <div class="status-grid">
+        <div class="status-item <%= @latest_status.power_on? ? 'power-on' : 'power-off' %>">
+          <h3 class="status-label <%= @latest_status.power_on? ? 'power-on-label' : 'power-off-label' %>">Power Status</h3>
+          <p class="status-value <%= @latest_status.power_on? ? 'power-on-value' : 'power-off-value' %>">
             <%= @latest_status.power_on? ? 'ON' : 'OFF' %>
           </p>
         </div>
         
-        <div class="bg-yellow-50 p-4 rounded-lg">
-          <h3 class="font-medium text-yellow-800">Battery Level</h3>
+        <div class="status-item battery-item">
+          <h3 class="status-label battery-label">Battery Level</h3>
           <p class="text-2xl font-bold text-yellow-600"><%= @latest_status.battery_level&.round(1) %>%</p>
         </div>
         
-        <div class="bg-green-50 p-4 rounded-lg">
-          <h3 class="font-medium text-green-800">Production</h3>
-          <p class="text-2xl font-bold text-green-600"><%= @latest_status.production&.round(2) %> kW</p>
+        <div class="status-item production-item">
+          <h3 class="status-label production-label">Production</h3>
+          <p class="status-value production-value"><%= (@latest_status.production / 1000.0).round(2) %> kW</p>
         </div>
         
-        <div class="bg-blue-50 p-4 rounded-lg">
-          <h3 class="font-medium text-blue-800">Consumption</h3>
-          <p class="text-2xl font-bold text-blue-600"><%= @latest_status.consumption&.round(2) %> kW</p>
+        <div class="status-item consumption-item">
+          <h3 class="status-label consumption-label">Consumption</h3>
+          <p class="status-value consumption-value"><%= (@latest_status.consumption / 1000.0).round(2) %> kW</p>
         </div>
       </div>
     </div>
   <% end %>
 
   <!-- Power Outages History -->
-  <div class="bg-white border border-gray-200 rounded-lg p-6">
-    <h2 class="text-xl font-semibold mb-4">Power Outages History</h2>
+  <div class="outages-section">
+    <h2 class="outages-header section-header">Power Outages History</h2>
     
     <% if @outages.any? %>
       <div class="overflow-x-auto">
-        <table class="w-full table-auto">
+        <table class="outages-table">
           <thead>
-            <tr class="bg-gray-50">
-              <th class="px-4 py-2 text-left">Start Time</th>
-              <th class="px-4 py-2 text-left">End Time</th>
-              <th class="px-4 py-2 text-left">Duration</th>
-              <th class="px-4 py-2 text-left">Status</th>
+            <tr class="table-header">
+              <th class="table-th">Start Time</th>
+              <th class="table-th">End Time</th>
+              <th class="table-th">Duration</th>
+              <th class="table-th">Status</th>
             </tr>
           </thead>
           <tbody>
             <% @outages.reverse.each do |outage| %>
-              <tr class="border-b border-gray-100">
-                <td class="px-4 py-2"><%= outage[:start_time].strftime("%b %d, %Y %I:%M %p") %></td>
+              <tr class="table-row">
+                <td class="table-td"><%= outage[:start_time].strftime("%b %d, %Y %I:%M %p") %></td>
                 <td class="px-4 py-2">
                   <% if outage[:ongoing] %>
                     <span class="text-red-600 font-medium">Ongoing</span>
@@ -69,12 +69,12 @@
                     <%= outage[:end_time].strftime("%b %d, %Y %I:%M %p") %>
                   <% end %>
                 </td>
-                <td class="px-4 py-2 font-medium"><%= outage[:duration] %></td>
+                <td class="table-td font-medium"><%= outage[:duration] %></td>
                 <td class="px-4 py-2">
                   <% if outage[:ongoing] %>
-                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm">Active Outage</span>
+                    <span class="badge active-outage">Active Outage</span>
                   <% else %>
-                    <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-sm">Resolved</span>
+                    <span class="badge resolved">Resolved</span>
                   <% end %>
                 </td>
               </tr>
@@ -84,16 +84,16 @@
       </div>
       
       <!-- Summary Stats -->
-      <div class="mt-6 p-4 bg-gray-50 rounded-lg">
-        <h3 class="font-semibold mb-2">Summary</h3>
-        <p class="text-gray-700">
-          Total outages recorded: <span class="font-medium"><%= @outages.count %></span>
+      <div class="summary-stats">
+        <h3 class="summary-header">Summary</h3>
+<p class="summary-text">
+          Total outages recorded: <span class="summary-count"><%= @outages.count %></span>
         </p>
       </div>
     <% else %>
-      <div class="text-center py-8">
-        <p class="text-gray-500 text-lg">No power outages recorded</p>
-        <p class="text-gray-400 text-sm mt-2">System has been running smoothly!</p>
+      <div class="no-outages">
+        <p class="no-outages-text">No power outages recorded</p>
+        <p class="smooth-text">System has been running smoothly!</p>
       </div>
     <% end %>
   </div>

@@ -1,10 +1,188 @@
-/*
- * This is a manifest file that'll be compiled into application.css.
- *
- * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
- * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
- * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
- * depending on specificity.
- *
- * Consider organizing styles into separate files for maintainability.
- */
+/* Dashboard Styles */
+
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+}
+
+.section-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.section-header {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.last-updated {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.last-updated-header {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.text-gray-700 { color: #374151; }
+.text-gray-500 { color: #6b7280; }
+.no-data { text-align: center; padding: 2rem; }
+
+.status-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .status-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .status-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.status-item {
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.power-on { background: #f0fdf4; }
+.power-off { background: #fef2f2; }
+.battery-item { background: #fffbeb; }
+.production-item { background: #f0fdf4; }
+.consumption-item { background: #eff6ff; }
+
+.status-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.power-on-label { color: #059669; }
+.power-off-label { color: #dc2626; }
+.battery-label { color: #d97706; }
+.production-label { color: #059669; }
+.consumption-label { color: #2563eb; }
+
+.status-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.power-on-value { color: #059669; }
+.power-off-value { color: #dc2626; }
+.battery-value { color: #d97706; }
+.production-value { color: #059669; }
+.consumption-value { color: #2563eb; }
+
+.outages-section {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
+
+.outages-header {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.outages-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow-x: auto;
+  display: block;
+}
+
+.table-header {
+  background: #f9fafb;
+}
+
+.table-th, .table-td {
+  padding: 0.5rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.table-th { font-weight: 600; }
+
+.table-row { border-bottom: 1px solid #f3f4f6; }
+
+.badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.active-outage {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.resolved {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.summary-stats {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 0.5rem;
+}
+
+.summary-header {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.summary-text { color: #374151; }
+
+.summary-count { font-weight: 500; }
+
+.no-outages {
+  text-align: center;
+  padding: 2rem;
+}
+
+.no-outages-text { 
+  color: #6b7280; 
+  font-size: 1.125rem; 
+}
+
+.smooth-text { 
+  color: #9ca3af; 
+  font-size: 0.875rem; 
+  margin-top: 0.5rem; 
+}
+
+/* Original manifest comment preserved */
+ /*
+  * This is a manifest file that'll be compiled into application.css.
+  *
+  * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
+  * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
+  * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
+  * depending on specificity.
+  *
+  * Consider organizing styles into separate files for maintainability.
+  */
