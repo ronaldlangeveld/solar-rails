@@ -9,6 +9,8 @@ class TelegramBotCommands
 
   def setup_webhook
     bot.listen do |message|
+      next unless message.respond_to?(:text)
+
       case message.text
       when "/now"
         handle_now_command(message)
