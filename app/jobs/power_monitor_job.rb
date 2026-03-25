@@ -7,16 +7,22 @@ class PowerMonitorJob < ApplicationJob
     solarman = SolarmanApi.new
     status_data = solarman.get_grid_status
     
-    return unless status_data
-    
+    unless status_data
+      handle_potential_outage
+      return
+    end
+
     # Extract data from the response
     grid_frequency = find_data_by_name(status_data, 'Grid Frequency')
     battery_level = find_data_by_name(status_data, 'SoC')
     solar_production = find_data_by_name(status_data, 'Total DC Input Power')
     consumption = find_data_by_name(status_data, 'Total Consumption Power')
     
-    return unless grid_frequency
-    
+    unless grid_frequency
+      handle_potential_outage
+      return
+    end
+
     current_status = grid_frequency['value'].to_f
     latest_record = GridStatus.latest_record
     
@@ -58,6 +64,21 @@ class PowerMonitorJob < ApplicationJob
     data_list.find { |item| item['name'] == name }
   end
   
+  def handle_potential_outage
+    latest_record = GridStatus.latest_record
+    return unless latest_record&.power_on?
+
+    GridStatus.create!(
+      status: 0,
+      battery_level: 0,
+      production: 0,
+      consumption: 0
+    )
+
+    TelegramBot.send_status_alert(false, 0, 0, 0)
+    Rails.logger.info "Power status changed (API unavailable) - Power OFF"
+  end
+
   def status_changed?(current_status, latest_record)
     return false unless latest_record
     
