@@ -8,9 +8,12 @@ class TelegramBotCommands
   end
 
   def setup_webhook
+    Rails.logger.info "[TelegramBot] Listener starting, waiting for messages..."
     bot.listen do |message|
+      Rails.logger.info "[TelegramBot] Received update: #{message.class.name}"
       next unless message.respond_to?(:text)
 
+      Rails.logger.info "[TelegramBot] Message text: #{message.text}"
       case message.text
       when "/now"
         handle_now_command(message)
